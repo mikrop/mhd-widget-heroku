@@ -48,7 +48,7 @@ public class MhdController {
      * @throws IOException
      * @throws URISyntaxException
      */
-    @RequestMapping(value = "/db/linka/update", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+    @RequestMapping(value = "/db/linky/update", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public Iterable<Linka> updateLinka() throws IOException, URISyntaxException {
         return exporter.saveLinky();
     }
