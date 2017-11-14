@@ -3,6 +3,7 @@ package cz.mikropsoft.mhdwidget.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class Zastavka {
     @JoinColumn(name = "linka_id")
     private Linka linka;
 
-    @Column
+    @Column(nullable = false)
     private String jmeno;
 
     @OneToMany(mappedBy = "zastavka", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -41,6 +42,7 @@ public class Zastavka {
         this.linka = linka;
     }
 
+    @NotNull
     public String getJmeno() {
         return jmeno;
     }

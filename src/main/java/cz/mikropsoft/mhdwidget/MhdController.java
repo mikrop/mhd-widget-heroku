@@ -31,8 +31,6 @@ public class MhdController {
     @Autowired
     private ProjectionFactory factory;
     @Autowired
-    private PagedResourcesAssembler<ZastavkaProjection> assembler;
-    @Autowired
     private MhdExporter exporter;
     @Autowired
     private LinkaRepository linkaRepository;
@@ -49,7 +47,7 @@ public class MhdController {
      * @throws URISyntaxException
      */
     @RequestMapping(value = "/db/linky/update", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-    public Iterable<Linka> updateLinka() throws IOException, URISyntaxException {
+    public Iterable<Linka> linkyUpdate() throws IOException, URISyntaxException {
         return exporter.saveLinky();
     }
 
@@ -74,8 +72,8 @@ public class MhdController {
      * @throws IOException
      * @throws URISyntaxException
      */
-    @RequestMapping(value = "/db/zastavka/update", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-    public Iterable<Zastavka> updateZastavka() throws IOException, URISyntaxException {
+    @RequestMapping(value = "/db/zastavky/update", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+    public Iterable<Zastavka> zastavkyUpdate() throws IOException, URISyntaxException {
         return exporter.zastavkyUpdate(linkaRepository.toUpdate());
     }
 
@@ -85,14 +83,6 @@ public class MhdController {
      * @param pageable stránkování
      * @return resource {@link ZastavkaProjection}
      */
-//    @RequestMapping(value="/api/zastavky", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-//    public ResponseEntity<?> getZastavky(Pageable pageable) {
-//        Page<Zastavka> zastavky = zastavkaRepository.findAll(pageable);
-//        Page<ZastavkaProjection> projected = zastavky.map(zastavka -> factory.createProjection(ZastavkaProjection.class, zastavka));
-//        PagedResources<Resource<ZastavkaProjection>> resources = assembler.toResource(projected);
-//        return ResponseEntity.ok(resources);
-//    }
-
     @RequestMapping(value="/api/zastavky", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public @ResponseBody ResponseEntity<?> getZastavky(Pageable pageable) {
         Page<Zastavka> zastavky = zastavkaRepository.findAll(pageable);
@@ -122,5 +112,17 @@ public class MhdController {
         AktualniSpoj projection = factory.createProjection(AktualniSpoj.class, spoj);
         return ResponseEntity.ok(projection);
     }
+
+//    /**
+//     * {@link Resource} zastávky.
+//     *
+//     * @param id zastávky, kterou chceme stahnout
+//     * @return zastávka pro offline verzi
+//     */
+//    @RequestMapping(value = "/api/zastavka/{id}/resource", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE, method = RequestMethod.GET)
+//    public @ResponseBody Resource getZastavkaResource(@PathVariable("id") int id, HttpServletResponse response) {
+//        ByteArrayInputStream inputStream = new ByteArrayInputStream(LocalDateTime.now().toString().getBytes());
+//        return new InputStreamResource(inputStream);
+//    }
 
 }

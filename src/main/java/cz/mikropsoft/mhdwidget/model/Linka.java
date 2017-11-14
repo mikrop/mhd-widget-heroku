@@ -5,6 +5,7 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "linka")
@@ -17,7 +18,7 @@ public class Linka {
     @Column(unique = true)
     private String smer;
 
-    @Column(name = "platnost_do")
+    @Column(name = "platnost_do", nullable = false)
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
     private LocalDate platnostDo;
 
@@ -41,6 +42,7 @@ public class Linka {
         this.smer = smer;
     }
 
+    @NotNull
     public LocalDate getPlatnostDo() {
         return platnostDo;
     }

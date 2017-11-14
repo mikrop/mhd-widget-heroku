@@ -5,6 +5,7 @@ import cz.mikropsoft.mhdwidget.model.Zastavka;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collection;
 
 /**
  * Rozhraní pro export jízdních řádů do jednotné JSON struktury.
@@ -26,6 +27,6 @@ public interface MhdExporter {
      * @return aktualizované {@link Zastavka}
      * @throws IOException
      */
-    Iterable<Zastavka> zastavkyUpdate(Iterable<Linka> linky) throws IOException;
+    Iterable<Zastavka> zastavkyUpdate(Collection<Linka> linky) throws IOException;
 
 }
