@@ -45,12 +45,14 @@ public class ObjectFactory {
      *
      * @param linka {@link Linka} na které je {@link Zastavka} umístěna
      * @param jmeno jméno zastávky
+     * @param url URL adresa
      * @return {@link Zastavka}
      */
-    public static Zastavka createZastavka(Linka linka, String jmeno) {
+    public static Zastavka createZastavka(Linka linka, String jmeno, String url) {
         Zastavka result = new Zastavka();
         result.setLinka(linka);
         result.setJmeno(jmeno);
+        result.setUrl(url);
         return result;
     }
 

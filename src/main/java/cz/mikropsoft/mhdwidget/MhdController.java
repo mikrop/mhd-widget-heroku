@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.projection.ProjectionFactory;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -47,8 +46,8 @@ public class MhdController {
      * @throws URISyntaxException
      */
     @RequestMapping(value = "/db/linky/update", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-    public Iterable<Linka> linkyUpdate() throws IOException, URISyntaxException {
-        return exporter.saveLinky();
+    public @ResponseBody ResponseEntity<?> linkyUpdate() throws IOException, URISyntaxException {
+        return ResponseEntity.ok(exporter.linkySave());
     }
 
     /**
@@ -57,12 +56,13 @@ public class MhdController {
      * @param id linky, jejíž zastávky budou aktualizovány
      * @return kolekce aktualizovaných {@link Zastavka}
      * @throws IOException
+     * @throws URISyntaxException
      */
     @RequestMapping(value = "/db/linka/{id}/update", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-    public Iterable<Zastavka> updateLinkaById(@PathVariable("id") int id) throws IOException {
+    public @ResponseBody ResponseEntity<?> updateLinkaById(@PathVariable("id") int id) throws IOException, URISyntaxException {
         Linka linka = linkaRepository.findOne(id);
         Assert.assertNotNull("Linka ID: " + id + " nebyla nalezena.", linka);
-        return exporter.zastavkyUpdate(Collections.singletonList(linka));
+        return ResponseEntity.ok(exporter.zastavkyUpdate(Collections.singletonList(linka)));
     }
 
     /**
@@ -73,8 +73,9 @@ public class MhdController {
      * @throws URISyntaxException
      */
     @RequestMapping(value = "/db/zastavky/update", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-    public Iterable<Zastavka> zastavkyUpdate() throws IOException, URISyntaxException {
-        return exporter.zastavkyUpdate(linkaRepository.toUpdate());
+    public @ResponseBody ResponseEntity<?> zastavkyUpdate() throws IOException, URISyntaxException {
+        List<Linka> linky = linkaRepository.toUpdate();
+        return ResponseEntity.ok(exporter.zastavkyUpdate(linky));
     }
 
     /**
@@ -97,6 +98,7 @@ public class MhdController {
      * @param clientLocalTime čas na klientu
      * @param id zastávky, z jaké chceme odjíždět
      * @return {@link AktualniSpoj}
+     * @throws IOException
      */
     @RequestMapping(value = "/api/zastavka/{id}/aktualni/{time}", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public ResponseEntity<AktualniSpoj> getAktualniSpoj(

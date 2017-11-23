@@ -25,7 +25,7 @@ public class Spoj {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected int id;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Zastavka.class)
     @JoinColumn(name = "zastavka_id")
     @JsonBackReference
     private Zastavka zastavka;
@@ -34,13 +34,13 @@ public class Spoj {
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalTime")
     private LocalTime odjezd;
 
-    @OneToOne
+    @OneToOne(targetEntity = Spoj.class)
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "predchozi_id", referencedColumnName = "id", insertable = false)
     private Spoj predchozi;
 
-    @OneToOne
+    @OneToOne(targetEntity = Spoj.class)
     @JsonIgnore
     @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "nasledujici_id", referencedColumnName = "id", insertable = false)

@@ -122,7 +122,7 @@ public class PmdpExporter implements MhdExporter {
 //            logger.debug("   Zastavka {} načtena", jmeno);
             Zastavka zastavka = zastavkaRepository.findByLinkaAndJmeno(linka, jmeno);
             if (zastavka == null) {
-                zastavka = ObjectFactory.createZastavka(linka, jmeno);
+                zastavka = ObjectFactory.createZastavka(linka, jmeno, absHref);
                 zastavka = zastavkaRepository.save(zastavka);
             }
 
@@ -164,13 +164,6 @@ public class PmdpExporter implements MhdExporter {
 //        }/*, executor*/);
     }
 
-    /**
-     * Exportuje kolekci {@link Zastavka}, navázaných na předané {@link Linka} ze stránek PMDP.
-     *
-     * @param linky kolekce linek, jejichž zastávky budou aktualizovány
-     * @return aktualizované {@link Zastavka}
-     * @throws IOException
-     */
     @Override
     public Iterable<Zastavka> zastavkyUpdate(Collection<Linka> linky) throws IOException {
         Assert.assertNotNull(linky);
@@ -222,15 +215,8 @@ public class PmdpExporter implements MhdExporter {
         return linkaRepository.save(linka);
     }
 
-    /**
-     * Exportuje jízdní řády ze stránek PMDP do kolekce {@link Linka}.
-     *
-     * @return kolekce {@link Linka}
-     * @throws IOException
-     * @throws URISyntaxException
-     */
     @Override
-    public Iterable<Linka> saveLinky() throws IOException, URISyntaxException {
+    public Iterable<Linka> linkySave() throws IOException, URISyntaxException {
         DateTime start = DateTime.now();
 
         URL url = new URL("http://jizdnirady.pmdp.cz/LinesList.aspx");

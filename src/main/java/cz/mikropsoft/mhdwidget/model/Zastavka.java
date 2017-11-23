@@ -1,5 +1,6 @@
 package cz.mikropsoft.mhdwidget.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
@@ -15,14 +16,18 @@ public class Zastavka {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected int id;
 
-    @ManyToOne
+    @ManyToOne(targetEntity = Linka.class)
     @JoinColumn(name = "linka_id")
     private Linka linka;
 
     @Column(nullable = false)
     private String jmeno;
 
-    @OneToMany(mappedBy = "zastavka", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Column
+    @JsonIgnore
+    private String url;
+
+    @OneToMany(mappedBy = "zastavka", cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, targetEntity = Spoj.class, orphanRemoval = true)
     @JsonManagedReference
     private List<Spoj> spoje = new LinkedList<>();
 
@@ -40,6 +45,14 @@ public class Zastavka {
 
     public void setLinka(Linka linka) {
         this.linka = linka;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     @NotNull

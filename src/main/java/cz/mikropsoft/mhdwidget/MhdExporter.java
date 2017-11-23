@@ -13,20 +13,22 @@ import java.util.Collection;
 public interface MhdExporter {
 
     /**
-     * Uloží všechny linky.
-     *
-     * @throws IOException
-     * @throws URISyntaxException
-     */
-    Iterable<Linka> saveLinky() throws IOException, URISyntaxException;
-
-    /**
-     * Aktualizuje zastávky na předaných linkách.
+     * Exportuje kolekci {@link Zastavka}, navázaných na předané {@link Linka}.
      *
      * @param linky kolekce linek, jejichž zastávky budou aktualizovány
      * @return aktualizované {@link Zastavka}
      * @throws IOException
+     * @throws URISyntaxException
      */
-    Iterable<Zastavka> zastavkyUpdate(Collection<Linka> linky) throws IOException;
+    Iterable<Zastavka> zastavkyUpdate(Collection<Linka> linky) throws IOException, URISyntaxException;
+
+    /**
+     * Uloží všechny linky.
+     *
+     * @return aktualizované {@link Linka}
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    Iterable<Linka> linkySave() throws IOException, URISyntaxException;
 
 }
