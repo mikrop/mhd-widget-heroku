@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 public class Linka {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     protected int id;
 
     @Column(unique = true)
@@ -25,6 +25,15 @@ public class Linka {
     @Column
     @JsonIgnore
     private String url;
+
+    public Linka() {
+    }
+
+    public Linka(@NotNull String smer, LocalDate platnostDo, String url) {
+        this.smer = smer;
+        this.platnostDo = platnostDo;
+        this.url = url;
+    }
 
     public int getId() {
         return id;

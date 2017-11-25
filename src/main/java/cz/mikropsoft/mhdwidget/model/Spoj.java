@@ -8,6 +8,7 @@ import org.hibernate.annotations.Type;
 import org.joda.time.LocalTime;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "spoj")
@@ -22,7 +23,7 @@ import javax.persistence.*;
 public class Spoj {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     protected int id;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Zastavka.class)
@@ -45,6 +46,14 @@ public class Spoj {
     @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "nasledujici_id", referencedColumnName = "id", insertable = false)
     private Spoj nasledujici;
+
+    public Spoj() {
+    }
+
+    public Spoj(@NotNull Zastavka zastavka, @NotNull LocalTime odjezd) {
+        this.zastavka = zastavka;
+        this.odjezd = odjezd;
+    }
 
     public int getId() {
         return id;

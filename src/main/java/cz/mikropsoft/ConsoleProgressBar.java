@@ -1,4 +1,4 @@
-package cz.mikropsoft.mhdwidget;
+package cz.mikropsoft;
 import java.util.Arrays;
 
 /**

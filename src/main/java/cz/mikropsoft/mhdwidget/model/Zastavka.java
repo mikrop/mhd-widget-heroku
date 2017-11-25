@@ -13,7 +13,7 @@ import java.util.List;
 public class Zastavka {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     protected int id;
 
     @ManyToOne(targetEntity = Linka.class)
@@ -30,6 +30,15 @@ public class Zastavka {
     @OneToMany(mappedBy = "zastavka", cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, targetEntity = Spoj.class, orphanRemoval = true)
     @JsonManagedReference
     private List<Spoj> spoje = new LinkedList<>();
+
+    public Zastavka() {
+    }
+
+    public Zastavka(@NotNull Linka linka, String jmeno, String url) {
+        this.linka = linka;
+        this.jmeno = jmeno;
+        this.url = url;
+    }
 
     public int getId() {
         return id;
