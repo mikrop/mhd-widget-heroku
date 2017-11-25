@@ -112,14 +112,14 @@ public class PmdpExporter implements MhdExporter {
             if (startEnd.isEmpty() || th.isEmpty()) {
                 continue;
             }
-            service.saveLinka(next);
+            result.add(service.saveLinka(next));
 
             next = iterator.next();
             startEnd = MhdService.selectStartEnd(next);
             if (startEnd.isEmpty() || th.isEmpty()) {
                 continue;
             }
-            service.saveLinka(next);
+            result.add(service.saveLinka(next));
 
         }
 
