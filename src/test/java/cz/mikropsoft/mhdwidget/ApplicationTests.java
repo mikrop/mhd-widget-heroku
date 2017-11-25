@@ -1,4 +1,4 @@
-package demo;
+package cz.mikropsoft.mhdwidget;
 
 import cz.mikropsoft.mhdwidget.MhdExporter;
 import cz.mikropsoft.mhdwidget.MhdWidgetApplication;
