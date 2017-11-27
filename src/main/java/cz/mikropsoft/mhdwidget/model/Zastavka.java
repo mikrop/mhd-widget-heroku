@@ -34,7 +34,7 @@ public class Zastavka {
     public Zastavka() {
     }
 
-    public Zastavka(@NotNull Linka linka, String jmeno, String url) {
+    public Zastavka(@NotNull Linka linka, @NotNull String jmeno, String url) {
         this.linka = linka;
         this.jmeno = jmeno;
         this.url = url;

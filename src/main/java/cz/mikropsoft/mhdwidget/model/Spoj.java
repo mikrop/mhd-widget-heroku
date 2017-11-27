@@ -31,7 +31,7 @@ public class Spoj {
     @JsonBackReference
     private Zastavka zastavka;
 
-    @Column
+    @Column(nullable = false)
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalTime")
     private LocalTime odjezd;
 
