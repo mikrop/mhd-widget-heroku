@@ -77,6 +77,9 @@ public class PmdpExporter implements MhdExporter {
 //                                                logger.debug("         Zpracování zastávky {} dokončeno", zastavka.getJmeno());
                                                 return spoje;
 
+                                            }).exceptionally(e -> {
+                                                logger.error("Failed to save spoj", e);
+                                                throw new IllegalStateException(e);
                                             });
                                 }
                                 return zastavka;
@@ -84,6 +87,9 @@ public class PmdpExporter implements MhdExporter {
                             } catch (IOException e) {
                                 throw new IllegalStateException(e);
                             }
+                        }).exceptionally(e -> {
+                            logger.error("Failed to save zastavka", e);
+                            throw new IllegalStateException(e);
                         });
             }
         }

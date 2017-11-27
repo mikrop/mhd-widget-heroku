@@ -37,9 +37,9 @@ public class MhdService {
     private static final DateTimeFormatter lt = DateTimeFormat.forPattern("HH:mm");
 
     @Autowired
-    private ZastavkaRepository zastavkaRepository;
-    @Autowired
     private LinkaRepository linkaRepository;
+    @Autowired
+    private ZastavkaRepository zastavkaRepository;
     @Autowired
     private SpojRepository spojRepository;
 
