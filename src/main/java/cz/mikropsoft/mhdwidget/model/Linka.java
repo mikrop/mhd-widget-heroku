@@ -29,10 +29,9 @@ public class Linka {
     public Linka() {
     }
 
-    public Linka(@NotNull String smer, @NotNull LocalDate platnostDo, String url) {
+    public Linka(@NotNull String smer, @NotNull LocalDate platnostDo) {
         this.smer = smer;
         this.platnostDo = platnostDo;
-        this.url = url;
     }
 
     public int getId() {

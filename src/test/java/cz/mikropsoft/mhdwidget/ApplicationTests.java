@@ -20,10 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -36,6 +33,7 @@ import java.util.stream.StreamSupport;
 public class ApplicationTests {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+    private Zastavka zastavka;
 
     @Autowired
     private MhdExporter exporter;
@@ -48,21 +46,30 @@ public class ApplicationTests {
     private SpojRepository spojRepository;
 
     @BeforeClass
-    public static void init() throws Exception {
+    public void init() throws Exception {
+        Linka linka = new Linka("Odnikud nikam", new LocalDate());
+        linka.setUrl("http://www.linka.cz");
+        linkaRepository.save(linka);
+        Zastavka zastavka = new Zastavka(linka, "Zastávka");
+        zastavka.setUrl("http://www.zastavka.cz");
+        this.zastavka = zastavkaRepository.save(zastavka);
+    }
+
+    @Test
+    public void testSave() throws Exception {
+        for (int i=1; i<10; i++) {
+            Spoj spojToSave = new Spoj(zastavka, new LocalTime());
+            Spoj savedSpoj = spojRepository.save(spojToSave);
+            logger.debug("Spoj uložen: ", savedSpoj);
+        }
     }
 
     @Test
     public void testSaveAsync() throws Exception {
-
-        Linka linkaToSave = new Linka("Odnikud nikam", new LocalDate(), "http://www.linka.cz");
-        Linka savedLinka = linkaRepository.save(linkaToSave);
-        Zastavka zastavkaToSave = new Zastavka(savedLinka, "Zastávka", "http://www.zastavka.cz");
-        Zastavka savedZastavka = zastavkaRepository.save(zastavkaToSave);
-
-        for (int i=1; i<3; i++) {
+        for (int i=1; i<10; i++) {
             CompletableFuture.supplyAsync(() -> {
 
-                Spoj spojToSave = new Spoj(savedZastavka, new LocalTime());
+                Spoj spojToSave = new Spoj(zastavka, new LocalTime());
                 Spoj savedSpoj = spojRepository.save(spojToSave);
                 return savedSpoj;
 

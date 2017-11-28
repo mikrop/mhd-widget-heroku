@@ -34,10 +34,9 @@ public class Zastavka {
     public Zastavka() {
     }
 
-    public Zastavka(@NotNull Linka linka, @NotNull String jmeno, String url) {
+    public Zastavka(@NotNull Linka linka, @NotNull String jmeno) {
         this.linka = linka;
         this.jmeno = jmeno;
-        this.url = url;
     }
 
     public int getId() {

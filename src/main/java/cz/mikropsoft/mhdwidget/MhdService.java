@@ -14,17 +14,18 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import javax.transaction.Transactional;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class MhdService {
@@ -56,46 +57,32 @@ public class MhdService {
     /**
      * Serializuje tabulku s odjezdy do objektu {@link Spoj}.
      *
-     * @param zastavkaId identifikátor {@link Zastavka}
+     * @param zastavka {@link Zastavka}
      * @param tr
-     * @return spoje
+     * @return uložené {@link Spoj}
      */
-    @Transactional
-    public CompletableFuture<List<Spoj>> saveSpoje(Integer zastavkaId, Element tr) {
-        return CompletableFuture.supplyAsync(() -> {
+//    @Transactional
+    public List<Spoj> saveSpoje(Zastavka zastavka, Element tr) {
+        String hour = tr.select("td[class=hour]").text();
+        Elements select = tr.select("td[class=normal]");
 
-            String hour = tr.select("td[class=hour]").text();
-            Elements select = tr.select("td[class=normal]");
-
-            List<Spoj> result = new ArrayList<>();
-            for (Element normal : select) {
-                String minute = normal.text().toLowerCase();
-                String substring = minute.substring(0, 2);
-                LocalTime odjezd = lt.parseLocalTime(hour + ":" + substring);
-
-                try {
-
-                    Zastavka zastavka = zastavkaRepository.findOne(zastavkaId);
-                    Spoj spoj = spojRepository.save(new Spoj(zastavka, odjezd));
-                    logger.debug("Ulozeny spoj: {}", spoj);
-                    result.add(spoj);
-
-                } catch (Exception e) {
-                    logger.error("Chyba ulození spojů.", e);
-                }
+        List<Spoj> result = new ArrayList<>();
+        for (Element normal : select) {
+            String minute = normal.text().toLowerCase();
+            String substring = minute.substring(0, 2);
+            LocalTime odjezd = lt.parseLocalTime(hour + ":" + substring);
+            result.add(new Spoj(zastavka, odjezd));
+        }
+        if (!CollectionUtils.isEmpty(result)) { // Vyparsoval se alespoň jeden spoj
+            try {
+                Iterable<Spoj> spoje = spojRepository.save(result);
+                result = StreamSupport.stream(spoje.spliterator(), false)
+                        .collect(Collectors.toList());
+            } catch (Exception e) {
+                logger.error("Nepodařilo se uložit spoje zastávky: " + zastavka.getJmeno() + ".", e);
             }
-//            if (!CollectionUtils.isEmpty(result)) { // Vyparsoval se alespoň jeden spoj
-//                try {
-//                    Iterable<Spoj> spoje = spojRepository.save(result);
-//                    return StreamSupport.stream(spoje.spliterator(), false)
-//                            .collect(Collectors.toList());
-//                } catch (Exception e) {
-//                    logger.error("Chyba ulození spojů.", e);
-//                }
-//            }
-            return result;
-
-        }, ForkJoinPool.commonPool());
+        }
+        return result;
     }
 
     /**
@@ -103,23 +90,20 @@ public class MhdService {
      *
      * @param linka na jaké je {@link Zastavka} umístěna
      * @param span
-     * @return zastávky
+     * @return uložené {@link Zastavka}
      */
-    @Transactional
-    public CompletableFuture<Zastavka> saveZastavka(Linka linka, Element span) {
-        return CompletableFuture.supplyAsync(() -> {
+//    @Transactional
+    public Zastavka saveZastavka(Linka linka, Element span) {
+        Element link = span.select("a").first();
+        String jmeno = link.text();
+        String absHref = link.attr("abs:href");
 
-            Element link = span.select("a").first();
-            String jmeno = link.text();
-            String absHref = link.attr("abs:href");
-
-            Zastavka result = zastavkaRepository.findByLinkaAndJmeno(linka, jmeno);
-            if (result == null) {
-                result = zastavkaRepository.save(new Zastavka(linka, jmeno, absHref));
-            }
-            return result;
-
-        }, ForkJoinPool.commonPool());
+        Zastavka zastavka = zastavkaRepository.findByLinkaAndJmeno(linka, jmeno);
+        if (zastavka == null) {
+            zastavka = new Zastavka(linka, jmeno);
+        }
+        zastavka.setUrl(absHref);
+        return zastavkaRepository.save(zastavka);
     }
 
     /**
@@ -129,7 +113,7 @@ public class MhdService {
      * @return uložená {@link Linka}
      * @throws URISyntaxException
      */
-    @Transactional
+//    @Transactional
     public Linka saveLinka(Element next) throws URISyntaxException {
 
         Elements startEnd = selectStartEnd(next);
@@ -138,17 +122,18 @@ public class MhdService {
 
         Element link = startEnd.select("a").first();
         String absHref = link.attr("abs:href");
+        Assert.assertNotNull("URL adresa linky nebyla nalezena.", absHref);
         URIBuilder builder = new URIBuilder(absHref);
         List<NameValuePair> queryParams = builder.getQueryParams();
         LocalDate platnostDo = ld.parseLocalDate(queryParams.get(4).getValue());
+        Assert.assertNotNull(platnostDo);
 
         Linka linka = linkaRepository.findBySmer(smer);
-        if (linka != null) {
-            linka.setPlatnostDo(platnostDo);
-            linka.setSmer(absHref);
-        } else {
-            linka = new Linka(smer, platnostDo, absHref);
+        if (linka == null) {
+            linka = new Linka(smer, platnostDo);
         }
+        linka.setUrl(absHref);
+        linka.setPlatnostDo(platnostDo);
         return linkaRepository.save(linka);
 
     }

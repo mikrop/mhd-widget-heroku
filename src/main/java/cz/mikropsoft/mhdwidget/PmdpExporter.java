@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,61 +38,53 @@ public class PmdpExporter implements MhdExporter {
 
         List<Zastavka> result = new ArrayList<>();
         for (Linka linka : linky) {
+            CompletableFuture.runAsync(() -> {
+                try {
 
-            Document document = Jsoup.parse(new URL(linka.getUrl()), 20000);
-            Element stations = document.select("div[id=stations]").get(0);
-            Elements spans = stations.select("[class=actual],[class=normal]");
+                    Document document = Jsoup.parse(new URL(linka.getUrl()), 20000);
+                    Element stations = document.select("div[id=stations]").get(0);
+                    Elements spans = stations.select("[class=actual],[class=normal]");
 
-            for (Element span : spans) {
-                service.saveZastavka(linka, span)
-                        .thenApply(zastavka -> {
-                            try {
+                    for (Element span : spans) {
 
-                                Document doc = Jsoup.parse(new URL(zastavka.getUrl()), 20000);
-                                Elements tables = doc.select("table[class=resultTable]");
-                                Elements trs = tables.get(0).select("tr");
+                        Zastavka zastavka = service.saveZastavka(linka, span);
+                        Document doc = Jsoup.parse(new URL(zastavka.getUrl()), 20000);
+                        Elements tables = doc.select("table[class=resultTable]");
+                        Elements trs = tables.get(0).select("tr");
 
-                                for (Element tr : trs) {
-                                    service.saveSpoje(zastavka.getId(), tr)
-                                            .thenApply(spoje -> {
+                        for (Element tr : trs) {
+                            List<Spoj> spoje = service.saveSpoje(zastavka, tr);
+//                                logger.debug("      Aktualizace spojů");
+                            Map<Integer, Spoj> map = spoje.stream()
+                                    .collect(Collectors.toMap(Spoj::getId, Function.identity()));
+                            map.values()
+                                    .forEach(spoj -> {
 
-//                                                logger.debug("      Aktualizace spojů");
-                                                Map<Integer, Spoj> map = spoje.stream()
-                                                        .collect(Collectors.toMap(Spoj::getId, Function.identity()));
-                                                map.values()
-                                                        .forEach(spoj -> {
+                                        int id = spoj.getId();
+                                        Spoj predchozi = map.get(id - 1);
+                                        if (predchozi == null) { // Předchozí neexituje, tzn. předchozí je poslední
+                                            predchozi = spoje.get(spoje.size() - 1);
+                                        }
+                                        spoj.setPredchozi(predchozi);
+                                        Spoj nasledujici = map.get(id + 1);
+                                        if (nasledujici == null) { // Následující neexituje, tzn. nasledujici je první
+                                            nasledujici = spoje.get(0);
+                                        }
+                                        spoj.setNasledujici(nasledujici);
 
-                                                            int id = spoj.getId();
-                                                            Spoj predchozi = map.get(id - 1);
-                                                            if (predchozi == null) { // Předchozí neexituje, tzn. předchozí je poslední
-                                                                predchozi = spoje.get(spoje.size() - 1);
-                                                            }
-                                                            spoj.setPredchozi(predchozi);
-                                                            Spoj nasledujici = map.get(id + 1);
-                                                            if (nasledujici == null) { // Následující neexituje, tzn. nasledujici je první
-                                                                nasledujici = spoje.get(0);
-                                                            }
-                                                            spoj.setNasledujici(nasledujici);
+                                    });
+//                                logger.debug("         Zpracování zastávky {} dokončeno", zastavka.getJmeno());
+                        }
 
-                                                        });
-//                                                logger.debug("         Zpracování zastávky {} dokončeno", zastavka.getJmeno());
-                                                return spoje;
+                        result.add(zastavka);
+                    }
 
-                                            }).exceptionally(e -> {
-                                                logger.error("Failed to save spoj", e);
-                                                throw new IllegalStateException(e);
-                                            });
-                                }
-                                return zastavka;
-
-                            } catch (IOException e) {
-                                throw new IllegalStateException(e);
-                            }
-                        }).exceptionally(e -> {
-                            logger.error("Failed to save zastavka", e);
-                            throw new IllegalStateException(e);
-                        });
-            }
+                } catch (Exception e) {
+                    throw new IllegalStateException(e);
+                }
+            }).exceptionally(e -> {
+                throw new IllegalStateException(e);
+            });
         }
         return result;
     }

@@ -2,8 +2,6 @@ package cz.mikropsoft.mhdwidget.repository;
 
 import cz.mikropsoft.mhdwidget.model.Linka;
 import cz.mikropsoft.mhdwidget.model.Zastavka;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
