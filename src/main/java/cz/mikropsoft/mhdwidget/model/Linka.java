@@ -42,6 +42,7 @@ public class Linka {
         this.id = id;
     }
 
+    @NotNull
     public String getSmer() {
         return smer;
     }

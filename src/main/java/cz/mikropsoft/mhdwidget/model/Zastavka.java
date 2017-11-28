@@ -47,6 +47,7 @@ public class Zastavka {
         this.id = id;
     }
 
+    @NotNull
     public Linka getLinka() {
         return linka;
     }

@@ -63,6 +63,7 @@ public class Spoj {
         this.id = id;
     }
 
+    @NotNull
     public Zastavka getZastavka() {
         return zastavka;
     }
@@ -71,6 +72,7 @@ public class Spoj {
         this.zastavka = zastavka;
     }
 
+    @NotNull
     public LocalTime getOdjezd() {
         return odjezd;
     }

@@ -9,6 +9,7 @@ import cz.mikropsoft.mhdwidget.repository.ZastavkaRepository;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,7 +46,7 @@ public class ApplicationTests {
     @Autowired
     private SpojRepository spojRepository;
 
-    @BeforeClass
+    @Before
     public void init() throws Exception {
         Linka linka = new Linka("Odnikud nikam", new LocalDate());
         linka.setUrl("http://www.linka.cz");
