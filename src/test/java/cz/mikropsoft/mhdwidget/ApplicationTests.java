@@ -70,9 +70,14 @@ public class ApplicationTests {
         for (int i=1; i<10; i++) {
             CompletableFuture.supplyAsync(() -> {
 
-                Spoj spojToSave = new Spoj(zastavka, new LocalTime());
-                Spoj savedSpoj = spojRepository.save(spojToSave);
-                return savedSpoj;
+                try {
+                    Zastavka z = zastavkaRepository.findOne(zastavka.getId());
+                    Spoj spojToSave = new Spoj(z, new LocalTime());
+                    Spoj savedSpoj = spojRepository.save(spojToSave);
+                    return savedSpoj;
+                } catch (Exception e) {
+                    throw new IllegalStateException(e);
+                }
 
             }).thenApply(spoj -> {
 

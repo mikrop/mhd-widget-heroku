@@ -13,11 +13,12 @@ import java.util.List;
 public class Zastavka {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    protected int id;
+    @GeneratedValue
+    @Column(unique = true, nullable = false)
+    protected Integer id;
 
     @ManyToOne(targetEntity = Linka.class)
-    @JoinColumn(name = "linka_id")
+    @JoinColumn(name = "linka_id", referencedColumnName = "id")
     private Linka linka;
 
     @Column(nullable = false)
@@ -27,7 +28,7 @@ public class Zastavka {
     @JsonIgnore
     private String url;
 
-    @OneToMany(mappedBy = "zastavka", cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, targetEntity = Spoj.class, orphanRemoval = true)
+    @OneToMany(mappedBy = "zastavka", targetEntity = Spoj.class, orphanRemoval = true)
     @JsonManagedReference
     private List<Spoj> spoje = new LinkedList<>();
 
@@ -39,11 +40,11 @@ public class Zastavka {
         this.jmeno = jmeno;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -79,6 +80,11 @@ public class Zastavka {
 
     public void setSpoje(List<Spoj> spoje) {
         this.spoje = spoje;
+    }
+
+    @Override
+    public String toString() {
+        return "Zastavka: id=" + id;
     }
 
 }

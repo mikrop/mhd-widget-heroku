@@ -3,6 +3,7 @@ package cz.mikropsoft.mhdwidget;
 import cz.mikropsoft.mhdwidget.model.Linka;
 import cz.mikropsoft.mhdwidget.model.Spoj;
 import cz.mikropsoft.mhdwidget.model.Zastavka;
+import cz.mikropsoft.mhdwidget.repository.SpojRepository;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
@@ -32,6 +33,9 @@ public class PmdpExporter implements MhdExporter {
     @Autowired
     private MhdService service;
 
+    @Autowired
+    private SpojRepository spojRepository;
+
     @Override
     public Iterable<Zastavka> zastavkyUpdate(Collection<Linka> linky) throws IOException, URISyntaxException {
         Assert.assertNotNull(linky);
@@ -53,30 +57,31 @@ public class PmdpExporter implements MhdExporter {
                         Elements trs = tables.get(0).select("tr");
 
                         for (Element tr : trs) {
-                            List<Spoj> spoje = service.saveSpoje(zastavka, tr);
-//                                logger.debug("      Aktualizace spojů");
-                            Map<Integer, Spoj> map = spoje.stream()
-                                    .collect(Collectors.toMap(Spoj::getId, Function.identity()));
-                            map.values()
-                                    .forEach(spoj -> {
-
-                                        int id = spoj.getId();
-                                        Spoj predchozi = map.get(id - 1);
-                                        if (predchozi == null) { // Předchozí neexituje, tzn. předchozí je poslední
-                                            predchozi = spoje.get(spoje.size() - 1);
-                                        }
-                                        spoj.setPredchozi(predchozi);
-                                        Spoj nasledujici = map.get(id + 1);
-                                        if (nasledujici == null) { // Následující neexituje, tzn. nasledujici je první
-                                            nasledujici = spoje.get(0);
-                                        }
-                                        spoj.setNasledujici(nasledujici);
-
-                                    });
-//                                logger.debug("         Zpracování zastávky {} dokončeno", zastavka.getJmeno());
+//                            logger.debug("      Aktualizace spojů");
+                            service.saveSpoje(zastavka, tr);
                         }
+                        List<Spoj> spoje = spojRepository.findByZastavkaOrderByOdjezd(zastavka);
+                        Map<Integer, Spoj> map = spoje.stream()
+                                .collect(Collectors.toMap(Spoj::getId, Function.identity()));
+                        map.values()
+                                .forEach(spoj -> {
 
-                        result.add(zastavka);
+                                    int id = spoj.getId();
+                                    Spoj predchozi = map.get(id - 1);
+                                    if (predchozi == null) { // Předchozí neexituje, tzn. předchozí je poslední
+                                        predchozi = spoje.get(spoje.size() - 1);
+                                    }
+                                    spoj.setPredchozi(predchozi);
+                                    Spoj nasledujici = map.get(id + 1);
+                                    if (nasledujici == null) { // Následující neexituje, tzn. nasledujici je první
+                                        nasledujici = spoje.get(0);
+                                    }
+                                    spoj.setNasledujici(nasledujici);
+
+                                });
+                        spojRepository.save(map.values());
+//                        logger.debug("         Zpracování zastávky {} dokončeno", zastavka.getJmeno());
+
                     }
 
                 } catch (Exception e) {

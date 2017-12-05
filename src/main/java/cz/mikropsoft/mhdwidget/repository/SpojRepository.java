@@ -17,7 +17,7 @@ import java.util.List;
 public interface SpojRepository extends PagingAndSortingRepository<Spoj, Integer>, SpojRepositoryCustom {
 
     /**
-     * Vrací všechny {@link Spoj}e z předané zastávky.
+     * Vrací všechny {@link Spoj}e z předané zastávky, seřazeny dle odjezdu.
      *
      * @param zastavka {@link Zastavka} jejíž spoje hledáme
      * @return všechny {@link Spoj}e

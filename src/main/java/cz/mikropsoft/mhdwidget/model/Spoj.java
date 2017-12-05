@@ -23,11 +23,12 @@ import javax.validation.constraints.NotNull;
 public class Spoj {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    protected int id;
+    @GeneratedValue
+    @Column(unique = true, nullable = false)
+    protected Integer id;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, targetEntity = Zastavka.class)
-    @JoinColumn(name = "zastavka_id")
+    @ManyToOne(targetEntity = Zastavka.class)
+    @JoinColumn(name = "zastavka_id", referencedColumnName = "id")
     @JsonBackReference
     private Zastavka zastavka;
 
@@ -55,11 +56,11 @@ public class Spoj {
         this.odjezd = odjezd;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -95,6 +96,11 @@ public class Spoj {
 
     public void setNasledujici(Spoj nasledujici) {
         this.nasledujici = nasledujici;
+    }
+
+    @Override
+    public String toString() {
+        return "Spoj: id=" + id;
     }
 
 }

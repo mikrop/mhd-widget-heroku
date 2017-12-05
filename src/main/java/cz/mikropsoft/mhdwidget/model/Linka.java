@@ -12,8 +12,9 @@ import javax.validation.constraints.NotNull;
 public class Linka {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    protected int id;
+    @GeneratedValue
+    @Column(unique = true, nullable = false)
+    protected Integer id;
 
     @Column(unique = true)
     private String smer;
@@ -34,11 +35,11 @@ public class Linka {
         this.platnostDo = platnostDo;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -66,6 +67,11 @@ public class Linka {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    @Override
+    public String toString() {
+        return "Linka: id=" + id;
     }
 
 }

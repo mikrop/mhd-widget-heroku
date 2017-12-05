@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.net.URISyntaxException;
@@ -61,7 +62,7 @@ public class MhdService {
      * @param tr
      * @return uložené {@link Spoj}
      */
-//    @Transactional
+    @Transactional
     public List<Spoj> saveSpoje(Zastavka zastavka, Element tr) {
         String hour = tr.select("td[class=hour]").text();
         Elements select = tr.select("td[class=normal]");
@@ -92,7 +93,7 @@ public class MhdService {
      * @param span
      * @return uložené {@link Zastavka}
      */
-//    @Transactional
+    @Transactional
     public Zastavka saveZastavka(Linka linka, Element span) {
         Element link = span.select("a").first();
         String jmeno = link.text();
@@ -113,7 +114,7 @@ public class MhdService {
      * @return uložená {@link Linka}
      * @throws URISyntaxException
      */
-//    @Transactional
+    @Transactional
     public Linka saveLinka(Element next) throws URISyntaxException {
 
         Elements startEnd = selectStartEnd(next);
