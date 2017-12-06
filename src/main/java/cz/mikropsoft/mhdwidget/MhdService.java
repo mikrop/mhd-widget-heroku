@@ -119,7 +119,7 @@ public class MhdService {
 
         Elements startEnd = selectStartEnd(next);
         String smer = startEnd.text();
-//        logger.debug("Smer:  {}", smer);
+        logger.debug("Smer:  {}", smer);
 
         Element link = startEnd.select("a").first();
         String absHref = link.attr("abs:href");

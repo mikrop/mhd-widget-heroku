@@ -44,6 +44,7 @@ public class PmdpExporter implements MhdExporter {
         for (Linka linka : linky) {
             CompletableFuture.runAsync(() -> {
                 try {
+                    logger.debug("Zpracování linky {}", linka.getSmer());
 
                     Document document = Jsoup.parse(new URL(linka.getUrl()), 20000);
                     Element stations = document.select("div[id=stations]").get(0);
@@ -55,11 +56,13 @@ public class PmdpExporter implements MhdExporter {
                         Document doc = Jsoup.parse(new URL(zastavka.getUrl()), 20000);
                         Elements tables = doc.select("table[class=resultTable]");
                         Elements trs = tables.get(0).select("tr");
+                        logger.debug("    Zpracování zastávky {}", zastavka.getJmeno());
 
                         for (Element tr : trs) {
-//                            logger.debug("      Aktualizace spojů");
                             service.saveSpoje(zastavka, tr);
                         }
+
+                        logger.debug("        Aktualizace vazeb mezi spoji");
                         List<Spoj> spoje = spojRepository.findByZastavkaOrderByOdjezd(zastavka);
                         Map<Integer, Spoj> map = spoje.stream()
                                 .collect(Collectors.toMap(Spoj::getId, Function.identity()));
@@ -80,9 +83,11 @@ public class PmdpExporter implements MhdExporter {
 
                                 });
                         spojRepository.save(map.values());
-//                        logger.debug("         Zpracování zastávky {} dokončeno", zastavka.getJmeno());
+                        logger.debug("    Zastávka zpracována");
 
                     }
+                    logger.debug("Linka pracována");
+
 
                 } catch (Exception e) {
                     throw new IllegalStateException(e);
