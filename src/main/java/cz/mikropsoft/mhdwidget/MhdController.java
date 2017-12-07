@@ -58,14 +58,6 @@ public class MhdController {
     @Autowired
     private SpojRepository spojRepository;
 
-    @PostConstruct
-    private void init() {
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        mapper.registerModule(new JodaModule());
-    }
-
     /**
      * Aktualizuje seznam linek.
      *
