@@ -113,6 +113,21 @@ public class MhdController {
     }
 
     /**
+     * Všechny zastávky (projekce pro fultext).
+     *
+     * @return resource {@link ZastavkaProjection}
+     */
+    @RequestMapping(value="/api/zastavka/{id}/spoje", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+    public @ResponseBody ResponseEntity<?> getSpoje(@PathVariable("id") int id) {
+        Zastavka zastavka = zastavkaRepository.findOne(id);
+        Assert.assertNotNull("Zastávka ID: " + id + " nebyla nalezena.", zastavka);
+        List<Spoj> spoje = spojRepository.findByZastavkaOrderByOdjezd(zastavka);
+        Page<SpojProjection> page = new PageImpl<>(spoje).map(spoj -> factory.createProjection(SpojProjection.class, spoj));
+        List<SpojProjection> content = page.getContent();
+        return ResponseEntity.ok(content);
+    }
+
+    /**
      * Aktuální spoj.
      *
      * @param clientLocalTime čas na klientu
