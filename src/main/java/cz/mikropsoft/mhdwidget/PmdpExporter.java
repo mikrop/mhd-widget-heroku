@@ -44,7 +44,7 @@ public class PmdpExporter implements MhdExporter {
         for (Linka linka : linky) {
             CompletableFuture.runAsync(() -> {
                 try {
-                    logger.debug("Zpracování linky {}", linka.getSmer());
+                    logger.debug("Zpracování linky ve směru {}", linka.getSmer());
 
                     Document document = Jsoup.parse(new URL(linka.getUrl()), 20000);
                     Element stations = document.select("div[id=stations]").get(0);
@@ -86,7 +86,7 @@ public class PmdpExporter implements MhdExporter {
                         logger.debug("    Zastávka zpracována");
 
                     }
-                    logger.debug("Linka pracována");
+                    logger.debug("Linka ve směru {} zpracována", linka.getSmer());
 
 
                 } catch (Exception e) {
