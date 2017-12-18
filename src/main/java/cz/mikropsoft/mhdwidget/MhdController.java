@@ -1,44 +1,36 @@
 package cz.mikropsoft.mhdwidget;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
 import cz.mikropsoft.mhdwidget.model.*;
 import cz.mikropsoft.mhdwidget.repository.LinkaRepository;
 import cz.mikropsoft.mhdwidget.repository.SpojRepository;
 import cz.mikropsoft.mhdwidget.repository.ZastavkaRepository;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.projection.ProjectionFactory;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URISyntaxException;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 public class MhdController {
@@ -106,8 +98,10 @@ public class MhdController {
      */
     @RequestMapping(value="/api/zastavky", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public @ResponseBody ResponseEntity<?> getZastavky(Pageable pageable) {
-        Page<Zastavka> zastavky = zastavkaRepository.findAll(pageable);
-        Page<ZastavkaProjection> page = zastavky.map(zastavka -> factory.createProjection(ZastavkaProjection.class, zastavka));
+        Spliterator<Zastavka> spliterator = zastavkaRepository.findAll().spliterator();
+        List<Zastavka> zastavky = StreamSupport.stream(spliterator, false)
+                .collect(Collectors.toList());
+        Page<ZastavkaProjection> page = new PageImpl<>(zastavky).map(zastavka -> factory.createProjection(ZastavkaProjection.class, zastavka));
         List<ZastavkaProjection> content = page.getContent();
         return ResponseEntity.ok(content);
     }
