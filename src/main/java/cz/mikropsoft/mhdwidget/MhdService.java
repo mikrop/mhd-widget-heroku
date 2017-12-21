@@ -1,6 +1,7 @@
 package cz.mikropsoft.mhdwidget;
 
 import cz.mikropsoft.mhdwidget.model.Linka;
+import cz.mikropsoft.mhdwidget.model.Prostredek;
 import cz.mikropsoft.mhdwidget.model.Spoj;
 import cz.mikropsoft.mhdwidget.model.Zastavka;
 import cz.mikropsoft.mhdwidget.repository.LinkaRepository;
@@ -110,12 +111,14 @@ public class MhdService {
     /**
      * Exportuje jiždní řád z předaného řádku tabulky obsahujícího odkaz na jízdní řád.
      *
+     * @param oznaceni označení linky
+     * @param prostredek dopravní prostředek, který na lince jezdí
      * @param next
      * @return uložená {@link Linka}
      * @throws URISyntaxException
      */
     @Transactional
-    public Linka saveLinka(Element next) throws URISyntaxException {
+    public Linka saveLinka(String oznaceni, Prostredek prostredek, Element next) throws URISyntaxException {
 
         Elements startEnd = selectStartEnd(next);
         String smer = startEnd.text();
@@ -131,7 +134,7 @@ public class MhdService {
 
         Linka linka = linkaRepository.findBySmer(smer);
         if (linka == null) {
-            linka = new Linka(smer, platnostDo);
+            linka = new Linka(oznaceni, prostredek, smer, platnostDo);
         }
         linka.setUrl(absHref);
         linka.setPlatnostDo(platnostDo);

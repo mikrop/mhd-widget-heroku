@@ -1,6 +1,8 @@
 package cz.mikropsoft.mhdwidget;
 
+import com.sun.istack.internal.Nullable;
 import cz.mikropsoft.mhdwidget.model.Linka;
+import cz.mikropsoft.mhdwidget.model.Prostredek;
 import cz.mikropsoft.mhdwidget.model.Spoj;
 import cz.mikropsoft.mhdwidget.model.Zastavka;
 import cz.mikropsoft.mhdwidget.repository.SpojRepository;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -35,6 +38,28 @@ public class PmdpExporter implements MhdExporter {
 
     @Autowired
     private SpojRepository spojRepository;
+
+    /**
+     * Vrací {@link Prostredek}, na základě předaného stylu.
+     *
+     * @param select vyparsovaný element
+     * @return dopravní prostředek, nebo {@code null}, pokud se z předaného stylu nepodařilo {@link Prostredek} určit
+     */
+    @Nullable
+    private static Prostredek parseProstredek(@NotNull Elements select) {
+        Assert.assertNotNull(select);
+
+        switch (select.attr("class")) {
+            case "linesList_BusStyle" :
+            case "linesList_NightStyle" :
+                return Prostredek.AUTOBUS;
+            case "linesList_TrolStyle" :
+            case "linesList_NightTrolStyle" :
+                return Prostredek.TROLEJBUS;
+            case "linesList_TramStyle" : return Prostredek.TRAMVAJ;
+        }
+        return null;
+    }
 
     @Override
     public Iterable<Zastavka> zastavkyUpdate(Collection<Linka> linky) throws IOException, URISyntaxException {
@@ -115,20 +140,23 @@ public class PmdpExporter implements MhdExporter {
         while (iterator.hasNext()) {
 
             Element next = iterator.next();
-            String th = next.select(
-                    "[class=linesList_TramStyle],[class=linesList_TrolStyle],[class=linesList_BusStyle],[class=linesList_NightStyle],[class=linesList_NightTrolStyle],[class=linesList_DiversionStyle]").text();
+            Elements select = next.select(
+                    "[class=linesList_TramStyle],[class=linesList_TrolStyle],[class=linesList_BusStyle],[class=linesList_NightStyle],[class=linesList_NightTrolStyle],[class=linesList_DiversionStyle]");
+            String oznaceni = select.text();
             Elements startEnd = MhdService.selectStartEnd(next);
-            if (startEnd.isEmpty() || th.isEmpty()) {
+            if (startEnd.isEmpty() || oznaceni.isEmpty()) {
                 continue;
             }
-            result.add(service.saveLinka(next));
+            Prostredek prostredek = parseProstredek(select);
+            result.add(service.saveLinka(oznaceni, prostredek, next));
 
             next = iterator.next();
             startEnd = MhdService.selectStartEnd(next);
-            if (startEnd.isEmpty() || th.isEmpty()) {
+            if (startEnd.isEmpty() || oznaceni.isEmpty()) {
                 continue;
             }
-            result.add(service.saveLinka(next));
+            prostredek = parseProstredek(select);
+            result.add(service.saveLinka(oznaceni, prostredek, next));
 
         }
 

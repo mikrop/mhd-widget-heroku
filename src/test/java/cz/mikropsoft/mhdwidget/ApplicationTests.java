@@ -1,6 +1,7 @@
 package cz.mikropsoft.mhdwidget;
 
 import cz.mikropsoft.mhdwidget.model.Linka;
+import cz.mikropsoft.mhdwidget.model.Prostredek;
 import cz.mikropsoft.mhdwidget.model.Spoj;
 import cz.mikropsoft.mhdwidget.model.Zastavka;
 import cz.mikropsoft.mhdwidget.repository.LinkaRepository;
@@ -46,7 +47,7 @@ public class ApplicationTests {
 
     @Before
     public void init() throws Exception {
-        Linka linka = new Linka("Odnikud nikam", new LocalDate());
+        Linka linka = new Linka("N13", Prostredek.AUTOBUS, "Odnikud nikam", new LocalDate());
         linka.setUrl("http://www.linka.cz");
         linkaRepository.save(linka);
         Zastavka zastavka = new Zastavka(linka, "Zastávka");

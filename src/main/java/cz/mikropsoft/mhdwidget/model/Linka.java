@@ -16,6 +16,13 @@ public class Linka {
     @Column(unique = true, nullable = false)
     protected Integer id;
 
+    @Column(nullable = false)
+    private String oznaceni;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Prostredek prostredek;
+
     @Column(unique = true)
     private String smer;
 
@@ -30,7 +37,10 @@ public class Linka {
     public Linka() {
     }
 
-    public Linka(@NotNull String smer, @NotNull LocalDate platnostDo) {
+    public Linka(@NotNull String oznaceni, @NotNull Prostredek prostredek,
+                 @NotNull String smer, @NotNull LocalDate platnostDo) {
+        this.oznaceni = oznaceni;
+        this.prostredek = prostredek;
         this.smer = smer;
         this.platnostDo = platnostDo;
     }
@@ -41,6 +51,24 @@ public class Linka {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    @NotNull
+    public String getOznaceni() {
+        return oznaceni;
+    }
+
+    public void setOznaceni(String oznaceni) {
+        this.oznaceni = oznaceni;
+    }
+
+    @NotNull
+    public Prostredek getProstredek() {
+        return prostredek;
+    }
+
+    public void setProstredek(Prostredek prostredek) {
+        this.prostredek = prostredek;
     }
 
     @NotNull
