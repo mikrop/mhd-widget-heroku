@@ -9,6 +9,12 @@ public interface ZastavkaProjection {
     @Value("#{target.id}")
     String getId();
 
+    @Value("#{target.linka.oznaceni}")
+    String getLinka();
+
+    @Value("#{target.linka.prostredek}")
+    Prostredek getProstredek();
+
     @Value("#{target.jmeno}")
     String getJmeno();
 
