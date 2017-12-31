@@ -57,7 +57,7 @@ public class MhdController {
      * @throws IOException
      * @throws URISyntaxException
      */
-    @RequestMapping(value = "/db/linky/update", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+    @RequestMapping(value = "/db/linka/update", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public @ResponseBody ResponseEntity<?> linkyUpdate() throws IOException, URISyntaxException {
         return ResponseEntity.ok(exporter.linkySave());
     }
@@ -84,7 +84,7 @@ public class MhdController {
      * @throws IOException
      * @throws URISyntaxException
      */
-    @RequestMapping(value = "/db/zastavky/update", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+    @RequestMapping(value = "/db/zastavka/update", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public @ResponseBody ResponseEntity<?> zastavkyUpdate() throws IOException, URISyntaxException {
         List<Linka> linky = linkaRepository.toUpdate();
         return ResponseEntity.ok(exporter.zastavkyUpdate(linky));

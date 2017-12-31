@@ -1,6 +1,5 @@
 package cz.mikropsoft.mhdwidget;
 
-import com.sun.istack.internal.Nullable;
 import cz.mikropsoft.mhdwidget.model.Linka;
 import cz.mikropsoft.mhdwidget.model.Prostredek;
 import cz.mikropsoft.mhdwidget.model.Spoj;
@@ -45,7 +44,6 @@ public class PmdpExporter implements MhdExporter {
      * @param select vyparsovaný element
      * @return dopravní prostředek, nebo {@code null}, pokud se z předaného stylu nepodařilo {@link Prostredek} určit
      */
-    @Nullable
     private static Prostredek parseProstredek(@NotNull Elements select) {
         Assert.assertNotNull(select);
 
