@@ -80,16 +80,16 @@ public class MhdController {
     /**
      * Exportuje všechny {@link Zastavka} ze stránek PMDP.
      *
-     * @param all {@code true} budou aktualizovány všechny zastývky, jinak pouze jejichž link má
+     * @param force {@code true} budou aktualizovány všechny zastávky, jinak pouze ty jejichž {@link Linka} má
      *                          datum platnosti < aktuální datum
-      * @return kolekce {@link Zastavka}
+     * @return kolekce {@link Zastavka}
      * @throws IOException
      * @throws URISyntaxException
      */
     @RequestMapping(value = "/db/zastavka/update", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public @ResponseBody ResponseEntity<?> zastavkyUpdate(
-            @RequestPart(name = "all", required = false) boolean all) throws IOException, URISyntaxException {
-        Iterable<Linka> linky  = (all) ? linkaRepository.findAll() : linkaRepository.toUpdate();
+            @RequestParam(value="force", required = false, defaultValue = "false") boolean force) throws IOException, URISyntaxException {
+        Iterable<Linka> linky = (force) ? linkaRepository.findAll() : linkaRepository.toUpdate();
         return ResponseEntity.ok(exporter.zastavkyUpdate(linky));
     }
 
