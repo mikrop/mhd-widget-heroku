@@ -20,7 +20,7 @@ public class ScheduledTasks {
     @Scheduled(cron = "0 0 12 * * *") // jednou denně o půlnoci
     public void update() throws IOException, URISyntaxException {
         controller.linkyUpdate();
-        controller.zastavkyUpdate();
+        controller.zastavkyUpdate(false);
     }
 
 }
