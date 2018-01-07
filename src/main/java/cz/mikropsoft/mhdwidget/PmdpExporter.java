@@ -22,7 +22,10 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -60,7 +63,7 @@ public class PmdpExporter implements MhdExporter {
     }
 
     @Override
-    public Iterable<Zastavka> zastavkyUpdate(Collection<Linka> linky) throws IOException, URISyntaxException {
+    public Iterable<Zastavka> zastavkyUpdate(Iterable<Linka> linky) throws IOException, URISyntaxException {
         Assert.assertNotNull(linky);
 
         List<Zastavka> result = new ArrayList<>();
@@ -107,10 +110,10 @@ public class PmdpExporter implements MhdExporter {
                                 });
                         spojRepository.save(map.values());
                         logger.debug("    Zastávka zpracována");
+                        result.add(zastavka);
 
                     }
                     logger.debug("Linka ve směru {} zpracována", linka.getSmer());
-
 
                 } catch (Exception e) {
                     throw new IllegalStateException(e);

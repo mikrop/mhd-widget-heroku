@@ -80,13 +80,16 @@ public class MhdController {
     /**
      * Exportuje všechny {@link Zastavka} ze stránek PMDP.
      *
-     * @return kolekce {@link Zastavka}
+     * @param all {@code true} budou aktualizovány všechny zastývky, jinak pouze jejichž link má
+     *                          datum platnosti < aktuální datum
+      * @return kolekce {@link Zastavka}
      * @throws IOException
      * @throws URISyntaxException
      */
     @RequestMapping(value = "/db/zastavka/update", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-    public @ResponseBody ResponseEntity<?> zastavkyUpdate() throws IOException, URISyntaxException {
-        List<Linka> linky = linkaRepository.toUpdate();
+    public @ResponseBody ResponseEntity<?> zastavkyUpdate(
+            @RequestPart(name = "all", required = false) boolean all) throws IOException, URISyntaxException {
+        Iterable<Linka> linky  = (all) ? linkaRepository.findAll() : linkaRepository.toUpdate();
         return ResponseEntity.ok(exporter.zastavkyUpdate(linky));
     }
 
@@ -147,8 +150,8 @@ public class MhdController {
     /**
      * {@link Resource} zastávky.
      *
-     * @param id zastávky, jejíž {@Spoj}e chceme stahnout
-     * @return {@Spoj}e pro offline verzi
+     * @param id zastávky, jejíž {@link Spoj}e chceme stahnout
+     * @return {@link Spoj}e pro offline verzi
      */
     @RequestMapping(value = "/api/zastavka/{id}/resource", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE, method = RequestMethod.GET)
     public @ResponseBody ResponseEntity<?> getZastavkaResource(@PathVariable("id") int id,
