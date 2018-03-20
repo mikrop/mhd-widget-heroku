@@ -59,7 +59,7 @@ public class PmdpExporter implements MhdExporter {
                 return Prostredek.TROLEJBUS;
             case "linesList_TramStyle" : return Prostredek.TRAMVAJ;
         }
-        return null;
+        return Prostredek.UNKNOWN;
     }
 
     @Override

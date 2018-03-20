@@ -21,7 +21,7 @@ public class Linka {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Prostredek prostredek;
+    private Prostredek prostredek = Prostredek.UNKNOWN;
 
     @Column(unique = true)
     private String smer;

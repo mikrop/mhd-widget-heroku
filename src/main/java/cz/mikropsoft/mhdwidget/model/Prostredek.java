@@ -6,6 +6,7 @@ package cz.mikropsoft.mhdwidget.model;
 public enum Prostredek {
     AUTOBUS,
     TROLEJBUS,
-    TRAMVAJ
+    TRAMVAJ,
+    UNKNOWN
     ;
 }
