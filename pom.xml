@@ -6,7 +6,7 @@
     <groupId>cz.mikropsoft.mhdwidget</groupId>
     <artifactId>mhd-widget-api</artifactId>
     <version>1.1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>mhd-widget-api</name>
     <description>API jízdních řádů projektu mhd-widget</description>
@@ -19,6 +19,7 @@
     </parent>
 
     <properties>
+        <start-class>cz.mikropsoft.mhdwidget.MhdWidgetApplication</start-class>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
     </properties>
@@ -55,6 +56,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -109,7 +115,7 @@
 
     <build>
         <plugins>
-            <plugin>
+            <!--plugin>
                 <groupId>com.heroku.sdk</groupId>
                 <artifactId>heroku-maven-plugin</artifactId>
                 <version>1.2.4</version>
@@ -119,6 +125,17 @@
                     <processTypes>
                         <web>java -Dserver.port=$PORT -cp target/classes:target/dependency/* cz.mikropsoft.mhdwidget.MhdWidgetApplication</web>
                     </processTypes>
+                </configuration>
+            </plugin-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>cz.mikropsoft.mhdwidget.MhdWidgetApplication</mainClass>
+                    <finalName>${project.artifactId}</finalName>
+                    <profiles>
+                        <profile>production</profile>
+                    </profiles>
                 </configuration>
             </plugin>
         </plugins>
